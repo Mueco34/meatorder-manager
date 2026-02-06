@@ -1,0 +1,37 @@
+{% extends "core/base.html" %}
+{% block title %}Start{% endblock %}
+
+{% block content %}
+<h2>🏠 Startseite</h2>
+
+<div class="card">
+  {% if active %}
+    <p>Aktive Runde: <strong>{{ active.date }}</strong></p>
+    <a class="btn" href="{% url 'round_dashboard' active.id %}">➡️ Aktive Runde öffnen</a>
+  {% else %}
+    <p><strong>Keine aktive Runde</strong></p>
+    <p style="opacity:.85;">Erstelle eine neue Runde, dann kannst du Bestellungen aufnehmen.</p>
+    <a class="btn" href="{% url 'create_round' %}">➕ Neue Runde erstellen</a>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>📌 Verwaltung</h3>
+  <a class="btn" href="{% url 'round_list' %}">📅 Runden</a>
+  <a class="btn" href="{% url 'customer_list' %}">👤 Kunden</a>
+  <a class="btn" href="{% url 'product_list' %}">🥩 Produkte</a>
+</div>
+
+{% if active %}
+  <div class="card">
+    <h3>⚡ Schnell</h3>
+    <a class="btn" href="{% url 'quick_order' active.id %}">➕ Neue Bestellung (aktive Runde)</a>
+  </div>
+{% endif %}
+
+<div class="card" style="opacity:.85;">
+  <small>
+    Tipp: Wenn du die App auf dem Handy nutzt, speichere die Seite als „Zum Startbildschirm hinzufügen“.
+  </small>
+</div>
+{% endblock %}

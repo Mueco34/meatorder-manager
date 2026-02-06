@@ -1,0 +1,50 @@
+{% extends "core/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+<h2>{{ title }}</h2>
+
+<div class="card">
+  <form method="post">
+    {% csrf_token %}
+
+    <label><strong>Name</strong></label>
+    <input name="name" placeholder="z.B. Rinderhack"
+           value="{% if product %}{{ product.name }}{% endif %}">
+
+    <br><br>
+
+    <label><strong>Einheit</strong></label>
+    <select name="unit">
+      {% with current=product.unit|default:"kg" %}
+        <option value="kg" {% if current == "kg" %}selected{% endif %}>kg</option>
+        <option value="Stück" {% if current == "Stück" %}selected{% endif %}>Stück</option>
+        <option value="Pack" {% if current == "Pack" %}selected{% endif %}>Pack</option>
+      {% endwith %}
+    </select>
+
+    <br><br>
+
+    <label><strong>Einkaufspreis (€)</strong></label>
+    <input name="buy_price" inputmode="decimal" placeholder="z.B. 12,00"
+           value="{% if product %}{{ product.buy_price }}{% endif %}">
+
+    <br><br>
+
+    <label><strong>Verkaufspreis (€)</strong></label>
+    <input name="sell_price" inputmode="decimal" placeholder="z.B. 15,00"
+           value="{% if product %}{{ product.sell_price }}{% endif %}">
+
+    <br><br>
+
+    <label style="display:flex; gap:10px; align-items:center;">
+      <input type="checkbox" name="active" {% if product is None or product.active %}checked{% endif %} style="width:auto;">
+      <strong>Aktiv</strong>
+    </label>
+
+    <button class="btn" type="submit">Speichern</button>
+  </form>
+</div>
+{% endblock %}

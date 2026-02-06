@@ -1,0 +1,118 @@
+{% extends "core/base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+
+<h2>Runde {{ round.date }}</h2>
+
+<a class="btn" href="{% url 'product_list' %}">🥩 Produkte</a>
+<a class="btn" href="{% url 'customer_list' %}">👤 Kunden</a>
+<a class="btn" href="{% url 'quick_order' round.id %}">➕ Neue Bestellung</a>
+
+<div class="card">
+  <p>Umsatz: <strong>{{ revenue|floatformat:2 }} €</strong></p>
+  <p>Einkauf: <strong>{{ cost|floatformat:2 }} €</strong></p>
+
+  <p>
+    Fahrtkosten:
+    <strong>{{ travel|floatformat:2 }} €</strong>
+    <span style="opacity:.75;">
+      ({{ round.travel_km|floatformat:1 }} km × {{ km_rate|floatformat:2 }} €)
+    </span>
+  </p>
+
+  <hr>
+
+  {% if profit >= 0 %}
+    <p>Gewinn: <strong style="color:#6aff6a;">{{ profit|floatformat:2 }} €</strong></p>
+  {% else %}
+    <p>Gewinn: <strong style="color:#ff6a6a;">{{ profit|floatformat:2 }} €</strong></p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>⚡ Schnellaktionen</h3>
+
+  <form method="post" action="{% url 'round_mark_all_paid' round.id %}" style="margin-bottom:10px;"
+        onsubmit="return confirm('Wirklich ALLE als bezahlt markieren?');">
+    {% csrf_token %}
+    <button class="btn" type="submit">💰 Alle bezahlt</button>
+  </form>
+
+  <form method="post" action="{% url 'round_mark_all_picked' round.id %}"
+        onsubmit="return confirm('Wirklich ALLE als abgeholt markieren?');">
+    {% csrf_token %}
+    <button class="btn" type="submit">📦 Alle abgeholt</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3>🛒 Einkaufsliste</h3>
+  <table>
+    <tr><th>Produkt</th><th>Menge</th></tr>
+    {% for i in shopping_items %}
+      <tr>
+        <td>{{ i.product__name }}</td>
+        <td>{{ i.total_qty }} {{ i.product__unit }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="2">Keine Bestellungen</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<h3>📦 Packliste</h3>
+{% for o in orders %}
+  <div class="card
+    {% if not o.paid and not o.picked_up %}
+      border-red
+    {% elif not o.paid or not o.picked_up %}
+      border-yellow
+    {% else %}
+      border-green
+    {% endif %}
+  ">
+    <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
+      <strong>{{ o.customer.name }}</strong>
+      <a class="btn" style="padding:10px; margin-top:0;" href="{% url 'order_edit' o.id %}">✏️ Bearbeiten</a>
+    </div>
+
+    {% if o.customer.phone %}
+      <div style="margin-top:8px; opacity:.9;">
+        📞 {{ o.customer.phone }}
+        <div style="margin-top:8px; display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn" style="padding:10px; margin-top:0;" href="tel:{{ o.customer.phone }}">📞 Anrufen</a>
+          <a class="btn" style="padding:10px; margin-top:0;"
+             href="https://wa.me/{{ o.customer.phone|cut:' '|cut:'+'|cut:'-'|cut:'('|cut:')' }}">💬 WhatsApp</a>
+        </div>
+      </div>
+    {% endif %}
+
+    <ul>
+      {% for item in o.items.all %}
+        <li>{{ item.product.name }} – {{ item.quantity }} {{ item.product.unit }}</li>
+      {% empty %}
+        <li>Keine Positionen</li>
+      {% endfor %}
+    </ul>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      {% if o.paid %}
+        <span style="color:#6aff6a; font-weight:700;">💰 Bezahlt</span>
+      {% else %}
+        <a class="btn" href="{% url 'mark_paid' o.id %}">💰 Bar erhalten</a>
+      {% endif %}
+
+      {% if o.picked_up %}
+        <span style="color:#6aff6a; font-weight:700;">📦 Abgeholt</span>
+      {% else %}
+        <a class="btn" href="{% url 'mark_picked' o.id %}">📦 Als abgeholt</a>
+      {% endif %}
+    </div>
+  </div>
+{% empty %}
+  <div class="card">Keine Bestellungen.</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "core/base.html" %}
+{% block title %}Kunden{% endblock %}
+
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+<h2>Kunden</h2>
+
+<a class="btn" href="{% url 'customer_create' %}">➕ Neuer Kunde</a>
+
+<div class="card">
+  <form method="get">
+    <input
+      name="q"
+      value="{{ q }}"
+      placeholder="Suchen (Name/Telefon)…"
+      style="width:100%; padding:12px; border-radius:10px;"
+    >
+  </form>
+</div>
+
+{% for c in customers %}
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+      <div>
+        <strong>{{ c.name }}</strong><br>
+        <span style="opacity:.85;">{{ c.phone }}</span><br>
+
+        {% if c.active %}
+          <span style="color:#6aff6a; font-weight:700;">✅ aktiv</span>
+        {% else %}
+          <span style="color:#ff6a6a; font-weight:700;">⛔ inaktiv</span>
+        {% endif %}
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <a class="btn" style="padding:10px; margin-top:0;" href="{% url 'customer_edit' c.id %}">✏️</a>
+        {% if c.phone %}
+          <a class="btn" style="padding:10px; margin-top:0;" href="tel:{{ c.phone }}">📞</a>
+          <a class="btn" style="padding:10px; margin-top:0;" href="https://wa.me/{{ c.phone|cut:' '|cut:'+'|cut:'-'|cut:'('|cut:')' }}">💬</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% empty %}
+  <div class="card">Noch keine Kunden.</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "core/base.html" %}
+{% block title %}Neue Bestellung{% endblock %}
+
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+
+<h2>Neue Bestellung – {{ round.date }}</h2>
+
+<div class="card">
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- Kunden-Suche -->
+    <label><strong>Kunde</strong></label><br>
+    <input
+      id="customerSearch"
+      placeholder="Kunde suchen (Name/Telefon)…"
+      style="width:100%; padding:12px; border-radius:10px; margin-bottom:10px;"
+    >
+
+    <select
+      id="customerSelect"
+      name="customer"
+      style="width:100%; padding:12px; border-radius:10px;"
+    >
+      <option value="">-- auswählen --</option>
+      {% for c in customers %}
+        <option value="{{ c.id }}">
+          {{ c.name }}{% if c.phone %} ({{ c.phone }}){% endif %}
+        </option>
+      {% endfor %}
+    </select>
+
+    <br><br>
+
+    <!-- Quelle -->
+    <label><strong>Quelle</strong></label><br>
+    <select name="source" style="width:100%; padding:12px; border-radius:10px;">
+      <option value="call">Anruf</option>
+      <option value="whatsapp">WhatsApp</option>
+      <option value="self">Kunde selbst</option>
+    </select>
+
+    <br><br>
+
+    <!-- Notiz -->
+    <label><strong>Notiz</strong></label><br>
+    <input
+      name="comment"
+      placeholder="z.B. bitte mager / extra…"
+      style="width:100%; padding:12px; border-radius:10px;"
+    >
+
+    <br><br>
+
+    <!-- Produkte -->
+    <strong>Produkte</strong>
+    <p style="opacity:.8; margin-top:6px;">
+      Menge eingeben (kg/Stück). Leer lassen = nicht bestellt.
+    </p>
+
+    {% for p in products %}
+      <div style="display:flex; gap:10px; align-items:center; margin:10px 0;">
+        <div style="flex:1;">
+          {{ p.name }} <span style="opacity:.7;">({{ p.unit }})</span>
+        </div>
+        <input
+          name="qty_{{ p.id }}"
+          inputmode="decimal"
+          placeholder="0"
+          style="width:120px; padding:12px; border-radius:10px;"
+        >
+      </div>
+    {% endfor %}
+
+    <button class="btn" type="submit">Bestellung speichern</button>
+  </form>
+</div>
+
+<!-- Kunden-Live-Suche -->
+<script>
+  const search = document.getElementById("customerSearch");
+  const select = document.getElementById("customerSelect");
+
+  search.addEventListener("input", () => {
+    const q = search.value.toLowerCase().trim();
+    for (const opt of select.options) {
+      if (!opt.value) {
+        opt.hidden = false;
+        continue;
+      }
+      const text = opt.text.toLowerCase();
+      opt.hidden = q && !text.includes(q);
+    }
+  });
+
+  select.addEventListener("change", () => {
+    if (select.value) search.value = "";
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "core/base.html" %}
+{% block title %}Neue Runde{% endblock %}
+
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+
+<h2>Neue Runde</h2>
+
+<div class="card">
+  <form method="post">
+    {% csrf_token %}
+
+    <label><strong>Datum</strong></label><br>
+    <input type="date" name="date">
+
+    <br><br>
+
+    <label><strong>Fahrtstrecke (KM, hin+zurück)</strong></label><br>
+    <input name="travel_km" inputmode="decimal" placeholder="z.B. 30" autocomplete="off">
+
+
+    <p style="opacity:.75; margin:10px 0 0;">
+      Fahrtkosten werden automatisch berechnet.
+    </p>
+
+    <button class="btn" type="submit">Runde erstellen & aktiv setzen</button>
+  </form>
+</div>
+{% endblock %}

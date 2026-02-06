@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+{% block title %}Gewinn{% endblock %}
+
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+
+<h2>Runde {{ round.date }}</h2>
+
+<div class="card">
+  <p>Umsatz: <strong>{{ revenue }} €</strong></p>
+  <p>Einkauf: <strong>{{ cost }} €</strong></p>
+  <p>Fahrtkosten: <strong>{{ travel }} €</strong></p>
+  <hr>
+
+  {% if profit >= 0 %}
+    <p>Gewinn: <strong style="color:#6aff6a;">{{ profit }} €</strong></p>
+  {% else %}
+    <p>Gewinn: <strong style="color:#ff6a6a;">{{ profit }} €</strong></p>
+  {% endif %}
+</div>
+{% endblock %}

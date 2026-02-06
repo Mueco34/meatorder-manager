@@ -1,0 +1,51 @@
+{% extends "core/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+
+<h2>{{ title }}</h2>
+
+<div class="card">
+  <form method="post">
+    {% csrf_token %}
+
+    <label><strong>Name</strong></label><br>
+    <input
+      name="name"
+      value="{% if customer %}{{ customer.name }}{% endif %}"
+      placeholder="z.B. Max Müller"
+      style="width:100%; padding:12px; border-radius:10px;"
+      required
+    >
+
+    <br><br>
+
+    <label><strong>Telefon</strong></label><br>
+    <input
+      name="phone"
+      value="{% if customer %}{{ customer.phone }}{% endif %}"
+      placeholder="z.B. 0176..."
+      style="width:100%; padding:12px; border-radius:10px;"
+    >
+
+    <br><br>
+
+    <label style="display:flex; gap:10px; align-items:center;">
+      <input type="checkbox" name="active"
+        {% if customer %}
+          {% if customer.active %}checked{% endif %}
+        {% else %}
+          checked
+        {% endif %}
+      >
+      <strong>Aktiv</strong>
+    </label>
+
+    <br>
+
+    <button class="btn" type="submit">Speichern</button>
+  </form>
+</div>
+{% endblock %}

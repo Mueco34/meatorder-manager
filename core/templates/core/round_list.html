@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}
+{% block title %}Runden{% endblock %}
+
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+   
+<h2>Runden</h2>
+
+<a class="btn" href="{% url 'create_round' %}">➕ Neue Runde</a>
+
+{% for r in rounds %}
+  <div class="card">
+    <strong>{{ r.date }}</strong>
+
+    {% if r.is_active %}
+      <div style="margin-top:6px; color:#6aff6a; font-weight:700;">✅ Aktiv</div>
+    {% endif %}
+
+    <a class="btn" href="{% url 'round_dashboard' r.id %}">📋 Dashboard</a>
+    <a class="btn" href="{% url 'shopping_list' r.id %}">🛒 Einkaufsliste</a>
+    <a class="btn" href="{% url 'pack_list' r.id %}">📦 Packliste</a>
+    <a class="btn" href="{% url 'round_profit' r.id %}">📈 Gewinn</a>
+
+    {% if not r.is_active %}
+      <a class="btn" href="{% url 'set_active_round' r.id %}">⭐ Als aktiv setzen</a>
+    {% endif %}
+  </div>
+{% empty %}
+  <div class="card">Noch keine Runden angelegt.</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "core/base.html" %}
+{% load dict_extras %}
+{% block title %}Bestellung bearbeiten{% endblock %}
+
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+<h2>Bestellung bearbeiten</h2>
+
+<div class="card">
+  <p><strong>Kunde:</strong> {{ order.customer.name }}</p>
+  <p style="opacity:.85;"><strong>Runde:</strong> {{ round.date }}</p>
+</div>
+
+<div class="card">
+  <form method="post">
+    {% csrf_token %}
+
+    <label><strong>Quelle</strong></label><br>
+    <select name="source" style="width:100%; padding:12px; border-radius:10px;">
+      <option value="call" {% if order.source == "call" %}selected{% endif %}>Anruf</option>
+      <option value="whatsapp" {% if order.source == "whatsapp" %}selected{% endif %}>WhatsApp</option>
+      <option value="self" {% if order.source == "self" %}selected{% endif %}>Kunde selbst</option>
+    </select>
+
+    <br><br>
+
+    <label><strong>Notiz</strong></label><br>
+    <input
+      name="comment"
+      value="{{ order.comment }}"
+      placeholder="z.B. bitte mager / extra…"
+      style="width:100%; padding:12px; border-radius:10px;"
+    >
+
+    <br><br>
+
+    <strong>Produkte</strong>
+    <p style="opacity:.8; margin-top:6px;">
+      Menge ändern. 0 oder leer = Position entfernen.
+    </p>
+
+    {% for p in products %}
+      <div style="display:flex; gap:10px; align-items:center; margin:10px 0;">
+        <div style="flex:1;">
+          {{ p.name }} <span style="opacity:.7;">({{ p.unit }})</span>
+        </div>
+        <input
+          name="qty_{{ p.id }}"
+          inputmode="decimal"
+          placeholder="0"
+          value="{{ qty_map|get_item:p.id }}"
+          style="width:120px; padding:12px; border-radius:10px;"
+        >
+      </div>
+    {% endfor %}
+
+    <button class="btn" type="submit">✅ Speichern</button>
+  </form>
+</div>
+
+<div class="card">
+  <form method="post" action="{% url 'order_delete' order.id %}"
+        onsubmit="return confirm('Wirklich löschen?');">
+    {% csrf_token %}
+    <button class="btn" type="submit" style="background: linear-gradient(90deg, #ff0000, #7a0c0c);">
+      🗑 Bestellung löschen
+    </button>
+  </form>
+</div>
+
+{% endblock %}

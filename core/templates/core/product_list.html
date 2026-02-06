@@ -1,0 +1,48 @@
+{% extends "core/base.html" %}
+{% block title %}Produkte{% endblock %}
+
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+
+<h2>Produkte</h2>
+
+<a class="btn" href="{% url 'product_create' %}">➕ Neues Produkt</a>
+
+<div class="card">
+  <form method="get">
+    <input
+      name="q"
+      value="{{ q }}"
+      placeholder="Suchen (Name/Einheit)…"
+      style="width:100%; padding:12px; border-radius:10px;"
+    >
+  </form>
+</div>
+
+{% for p in products %}
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+      <div>
+        <strong>{{ p.name }}</strong>
+        <span style="opacity:.75;">({{ p.unit }})</span><br>
+
+        <span style="opacity:.85;">Einkauf: <strong>{{ p.buy_price }} €</strong></span><br>
+        <span style="opacity:.85;">Verkauf: <strong>{{ p.sell_price }} €</strong></span><br>
+
+        {% if p.active %}
+          <span style="color:#6aff6a; font-weight:700;">✅ aktiv</span>
+        {% else %}
+          <span style="color:#ff6a6a; font-weight:700;">⛔ inaktiv</span>
+        {% endif %}
+      </div>
+
+      <div>
+        <a class="btn" href="{% url 'product_edit' p.id %}">Bearbeiten</a>
+      </div>
+    </div>
+  </div>
+{% empty %}
+  <div class="card">Noch keine Produkte.</div>
+{% endfor %}
+{% endblock %}

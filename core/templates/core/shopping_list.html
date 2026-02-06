@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+{% block title %}Einkaufsliste{% endblock %}
+{% block content %}
+<a href="#" data-fallback="{% url 'home' %}"
+   onclick="goBack(this.dataset.fallback); return false;">← zurück</a>
+
+<h2>Runde {{ round.date }}</h2>
+
+<div class="card">
+  <table>
+    <tr><th>Produkt</th><th>Menge</th></tr>
+    {% for i in items %}
+      <tr>
+        <td>{{ i.product__name }}</td>
+        <td>{{ i.total_qty }} {{ i.product__unit }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="2">Keine Bestellungen</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
